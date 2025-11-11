@@ -1,44 +1,53 @@
-//your JS code here. If required.
-const form=document.getElementById("form")
-const fontsize=document.getElementById("fontsize")
-const fontcolor=document.getElementById("fontcolor");
+// const form = document.getElementById("form");
+const fontsize = document.getElementById("fontsize");
+const fontcolor = document.getElementById("fontcolor");
 
-fontsize.value=getCookie("fontsize") || 16;
-fontcolor.value=getCookie("fontcolor") || "#000000";
+// Load saved cookie values if they exist
+const savedFontSize = getCookie("fontsize");
+const savedFontColor = getCookie("fontcolor");
 
-document.body.style.fontSize=fontsize.value+"px";
-document.body.style.color=fontcolor.value
+// Apply saved values or defaults
+const currentFontSize = savedFontSize ? savedFontSize : 16;
+const currentFontColor = savedFontColor ? savedFontColor : "#000000";
 
-form.addEventListener("submit",saveChanges)
+// Set input values
+fontsize.value = currentFontSize;
+fontcolor.value = currentFontColor;
 
-function getCookie(name){
-	const cookies=document.cookie.split("; ")
+// ✅ Apply styles using CSS variables
+document.documentElement.style.setProperty("--fontsize", currentFontSize + "px");
+document.documentElement.style.setProperty("--fontcolor", currentFontColor);
 
-	for(let cookie of cookies){
-		const [key,value]=cookie.split("=")
-		if(key==name){
-			return value
-		}
-	}
+// Save button functionality
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
 
-	return null
+  const sizeValue = fontsize.value;
+  const colorValue = fontcolor.value;
+
+  // Save cookies (for 2 days)
+  setCookie("fontsize", sizeValue, 2);
+  setCookie("fontcolor", colorValue, 2);
+
+  // ✅ Apply updated styles immediately
+  document.documentElement.style.setProperty("--fontsize", sizeValue + "px");
+  document.documentElement.style.setProperty("--fontcolor", colorValue);
+});
+
+// Helper: set cookie
+function setCookie(name, value, days) {
+  const date = new Date();
+  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+  const expires = "expires=" + date.toUTCString();
+  document.cookie = `${name}=${value}; ${expires}; path=/`;
 }
 
-function addCookie(name,value,days,path){
-	const date=new Date()
-
-	date.setTime(date.getTime()+days*24*60*60*1000)
-	const expireDate=date.toUTCString()
-
-	document.cookie=`${name}=${value}; expires=${expireDate}; path=${path}`
+// Helper: get cookie
+function getCookie(name) {
+  const cookies = document.cookie.split("; ");
+  for (let cookie of cookies) {
+    const [key, val] = cookie.split("=");
+    if (key === name) return val;
+  }
+  return null;
 }
-
-function saveChanges(e){
-	addCookie("fontsize",`${e.target[0].value}`,2,"/")
-	addCookie("fontcolor",`${e.target[1].value}`,2,"/")
-
-	document.body.style.fontSize = sizeValue + "px";
-	document.body.style.color = colorValue;
-	
-}
-
