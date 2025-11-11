@@ -3,8 +3,11 @@ const form=document.getElementById("form")
 const fontsize=document.getElementById("fontsize")
 const fontcolor=document.getElementById("fontcolor");
 
-fontsize.value=getCookie("fontsize")==null?16:getCookie("fontsize")
-fontcolor.value=getCookie("fontcolor")==null?"#000000":getCookie("fontcolor")
+fontsize.value=getCookie("fontsize") || 16;
+fontcolor.value=getCookie("fontcolor") || "#000000";
+
+document.body.style.fontSize=fontsize.value+"px";
+document.body.style.color=fontcolor.value
 
 form.addEventListener("submit",saveChanges)
 
@@ -33,6 +36,9 @@ function addCookie(name,value,days,path){
 function saveChanges(e){
 	addCookie("fontsize",`${e.target[0].value}`,2,"/")
 	addCookie("fontcolor",`${e.target[1].value}`,2,"/")
+
+	document.body.style.fontSize = sizeValue + "px";
+	document.body.style.color = colorValue;
 	
 }
 
